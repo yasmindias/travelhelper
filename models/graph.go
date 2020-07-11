@@ -1,5 +1,9 @@
 package models
 
+import (
+	"strconv"
+)
+
 const Infinity = int(^uint(0) >> 1)
 
 type Graph struct {
@@ -48,4 +52,14 @@ func (g *Graph) Dijkstra(origin, destiny string) (int, []string) {
 		visited[vertex] = true
 	}
 	return 0, nil
+}
+
+func (g *Graph) PrintPath(cost int, path []string) string {
+	str := ""
+	for _, vertex := range path {
+		str += vertex + " - "
+	}
+	str = str[0:len(str)-3] + " > $" + strconv.Itoa(cost)
+
+	return str
 }

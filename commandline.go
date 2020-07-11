@@ -25,8 +25,7 @@ func main() {
 		destiny := strings.TrimSuffix(places[1], "\n")
 
 		cost, path := graph.Dijkstra(origin, destiny)
-		fmt.Print(path)
-		fmt.Printf(" > $%d\n", cost)
+		fmt.Println("Best route: " + graph.PrintPath(cost, path))
 	} else {
 		fmt.Println(errors.New("The input must be in the format \"ORG-DEST\"."))
 	}

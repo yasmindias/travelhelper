@@ -1,91 +1,61 @@
 package models
 
 import (
-	"errors"
 	"fmt"
 )
 
-const MaxInt = ^int(0)
+const Infinity = int(^uint(0) >> 1)
 
 type Graph struct {
-	graph map[string]Vertex
+	vertices map[string][]Edge
+	minPath  []string
+	minCost  int
 }
 
-func (g *Graph) Create(edges []Edge) {
-	g.graph = map[string]Vertex{}
-
-	for _, edge := range edges {
-		if _, notExists := g.graph[edge.v1]; notExists {
-			g.graph[edge.v1] = Vertex{edge.v1, MaxInt, nil, map[*Vertex]int{}}
-		}
-		if _, notExists := g.graph[edge.v2]; notExists {
-			g.graph[edge.v2] = Vertex{edge.v2, MaxInt, nil, map[*Vertex]int{}}
-		}
-	}
-
-	for _, edge := range edges {
-		vertex1 := g.graph[edge.v1]
-		vertex2 := g.graph[edge.v2]
-		vertex1.neighbours[&vertex2] = edge.dist
-	}
+func (g *Graph) PrintVertices() {
+	fmt.Println(g.minPath)
 }
 
-func (g *Graph) Dijkstra(startVertex string) {
-	if _, notExists := g.graph[startVertex]; notExists {
-		fmt.Println(errors.New("Graph doesn't contain vertex '" + startVertex + "'"))
-		return
-	}
-
-	source := g.graph[startVertex]
-	var q map[string]Vertex
-
-	for _, vertex := range g.graph {
-		if vertex.id == source.id {
-			vertex.previous = &source
-			vertex.dist = 0
-		} else {
-			vertex.previous = nil
-			vertex.dist = MaxInt
-		}
-
-		q[vertex.id] = vertex
-	}
-
-	dijkstra(q)
+func (g *Graph) Init() {
+	g.vertices = make(map[string][]Edge)
 }
 
-func dijkstra(q map[string]Vertex) {
-	var u Vertex
+func (g *Graph) AddEdge(origin, destiny string, cost int) {
+	g.vertices[origin] = append(g.vertices[origin], Edge{vertex: destiny, cost: cost})
+	g.vertices[destiny] = append(g.vertices[destiny], Edge{vertex: origin, cost: cost})
+}
 
-	for key, vertex := range q {
-		u = vertex //gets vertex with the smallest distance
-		delete(q, key)
-		if u.dist == MaxInt {
-			break
+func (g *Graph) getEdges(vertex string) []Edge {
+	return g.vertices[vertex]
+}
+
+func (g *Graph) Dijkstra(origin, destiny string) (int, []string) {
+	h := newHeap()
+	h.push(Path{value: 0, vertices: []string{origin}})
+	visited := make(map[string]bool)
+
+	for len(*h.values) > 0 {
+		//Gets the nearest vertex
+		p := h.pop()
+		vertex := p.vertices[len(p.vertices)-1]
+
+		if visited[vertex] {
+			continue
 		}
 
-		for neighbour, dist := range u.neighbours {
-			altDistance := u.dist + dist
-			if altDistance < dist {
-				delete(q, neighbour.id)
-				neighbour.dist = altDistance
-				neighbour.previous = &u
-				q[neighbour.id] = *neighbour
+		if vertex == destiny {
+			return p.value, p.vertices
+		}
+
+		for _, e := range g.getEdges(vertex) {
+			if !visited[vertex] {
+				altCost := p.value + e.cost
+				vertices := append([]string{}, append(p.vertices, e.vertex)...)
+				h.push(Path{value: altCost, vertices: vertices})
 			}
 		}
-	}
-}
 
-func (g *Graph) PrintPath(endVertex string) {
-	if _, notExists := g.graph[endVertex]; notExists {
-		fmt.Println(errors.New("Graph doesn't contain vertex '" + endVertex + "'"))
-		return
+		visited[vertex] = true
 	}
-
-	end := g.graph[endVertex]
-	end.PrintPath()
-
-	if end.dist != MaxInt {
-		fmt.Printf(" > %d \n", end.dist)
-	}
+	return 0, nil
 }

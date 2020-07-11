@@ -1,19 +1,9 @@
 package models
 
-import (
-	"fmt"
-)
-
 const Infinity = int(^uint(0) >> 1)
 
 type Graph struct {
 	vertices map[string][]Edge
-	minPath  []string
-	minCost  int
-}
-
-func (g *Graph) PrintVertices() {
-	fmt.Println(g.minPath)
 }
 
 func (g *Graph) Init() {

@@ -14,7 +14,15 @@ func (g *Graph) Init() {
 	g.vertices = make(map[string][]Edge)
 }
 
-func (g *Graph) AddEdge(origin, destiny string, cost int) {
+func (g *Graph) AddEdges(routes []Route) Graph {
+	g.Init()
+	for _, route := range routes {
+		g.addEdge(route.Origin, route.Destiny, route.Cost)
+	}
+	return *g
+}
+
+func (g *Graph) addEdge(origin, destiny string, cost int) {
 	g.vertices[origin] = append(g.vertices[origin], Edge{vertex: destiny, cost: cost})
 	g.vertices[destiny] = append(g.vertices[destiny], Edge{vertex: origin, cost: cost})
 }

@@ -4,12 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	. "github.com/yasmindias/travelhelper/config/dao"
 	. "github.com/yasmindias/travelhelper/models"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/yasmindias/travelhelper/utils"
 )
-
-var dao = RouterDAO{}
 
 func RespondWithError(w http.ResponseWriter, code int, msg string) {
 	respondWithJson(w, code, map[string]string{"error": msg})
@@ -23,11 +20,8 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 }
 
 func GetAll(w http.ResponseWriter, r *http.Request) {
-	routes, err := dao.GetAll()
-	if err != nil {
-		RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
+	file := utils.OpenFile("resources/input_routes.csv")
+	routes := utils.ReadFile(file)
 	respondWithJson(w, http.StatusOK, routes)
 }
 
@@ -38,10 +32,11 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	route.ID = bson.NewObjectId()
-	if err := dao.Create(route); err != nil {
-		RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
+
+	file := utils.OpenFile("resources/input_routes.csv")
+	err := utils.WriteToFile(file, route)
+
+	if err == nil {
+		respondWithJson(w, http.StatusCreated, route)
 	}
-	respondWithJson(w, http.StatusCreated, route)
 }

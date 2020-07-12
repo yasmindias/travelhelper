@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/csv"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
@@ -13,15 +12,16 @@ import (
 const Infinity = int(^uint(0) >> 1)
 
 func PopulateGraph(filename string) Graph {
-	file := openFile(filename)
-	graph := readFile(file)
+	file := OpenFile(filename)
+	routes := ReadFile(file)
+	graph := Graph{}
 
 	defer file.Close()
 
-	return graph
+	return graph.AddEdges(routes)
 }
 
-func openFile(filename string) *os.File {
+func OpenFile(filename string) *os.File {
 	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Println(err)
@@ -31,9 +31,8 @@ func openFile(filename string) *os.File {
 	return file
 }
 
-func readFile(file *os.File) Graph {
-	graph := Graph{}
-	graph.Init()
+func ReadFile(file *os.File) []Route {
+	routes := []Route{}
 
 	csvLines, err := csv.NewReader(file).ReadAll()
 	if err != nil {
@@ -42,14 +41,13 @@ func readFile(file *os.File) Graph {
 
 	for _, line := range csvLines {
 		cost, _ := strconv.Atoi(line[2])
-		graph.AddEdge(line[0], line[1], cost)
+		routes = append(routes, Route{line[0], line[1], cost})
 	}
 
-	return graph
+	return routes
 }
 
-func writeToFile(filename string, route Route) {
-	file := openFile(filename)
+func WriteToFile(file *os.File, route Route) error {
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
@@ -57,7 +55,5 @@ func writeToFile(filename string, route Route) {
 	line := []string{route.Origin, route.Destiny, cost}
 
 	err := writer.Write(line)
-	if err != nil {
-		log.Fatal("Can't add new route to file", err)
-	}
+	return err
 }

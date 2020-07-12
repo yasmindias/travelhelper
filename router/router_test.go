@@ -4,8 +4,13 @@ import (
 	"bytes"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
+
+func TestMain(m *testing.M) {
+	os.Setenv("filename", "resources/input_routes.csv")
+}
 
 func TestGetAll(t *testing.T) {
 	req, err := http.NewRequest("GET", "/api/routes", nil)

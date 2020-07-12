@@ -12,16 +12,19 @@ func setup() *Graph {
 	return &graph
 }
 
-func addEdges(graph *Graph) {
-	graph.AddEdge("S", "B", 4)
-	graph.AddEdge("S", "C", 2)
-	graph.AddEdge("B", "C", 1)
-	graph.AddEdge("B", "D", 5)
-	graph.AddEdge("C", "D", 8)
-	graph.AddEdge("C", "E", 10)
-	graph.AddEdge("D", "E", 2)
-	graph.AddEdge("D", "T", 6)
-	graph.AddEdge("E", "T", 2)
+func AddEdges(graph *Graph) {
+	routes := []Route{
+		Route{"S", "B", 4},
+		Route{"S", "C", 2},
+		Route{"B", "C", 1},
+		Route{"B", "D", 5},
+		Route{"C", "D", 8},
+		Route{"C", "E", 10},
+		Route{"D", "E", 2},
+		Route{"D", "T", 6},
+		Route{"E", "T", 2},
+	}
+	graph.AddEdges(routes)
 }
 
 func TestInt(t *testing.T) {
@@ -33,17 +36,17 @@ func TestInt(t *testing.T) {
 
 func TestDijkstra(t *testing.T) {
 	graph := setup()
-	addEdges(graph)
+	AddEdges(graph)
 
-	cost, path := graph.Dijkstra("E", "S")
+	result := graph.Dijkstra("E", "S")
 	expCost := 10
 	expPath := []string{"E", "D", "B", "C", "S"}
 
-	if cost != expCost {
+	if result.Cost != expCost {
 		t.Error("Couldn't calculate correct cost")
 	}
 
-	if !reflect.DeepEqual(path, expPath) {
+	if !reflect.DeepEqual(result.Path, expPath) {
 		t.Error("Couldn't calculate correct path")
 	}
 }

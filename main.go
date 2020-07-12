@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	. "github.com/yasmindias/travelhelper/models"
 	router "github.com/yasmindias/travelhelper/router"
 	"github.com/yasmindias/travelhelper/utils"
 )
@@ -25,7 +24,7 @@ func main() {
 }
 
 func runCommandLine(filename string) {
-	graph := startGraphWithCsvFile(filename)
+	graph := utils.StartGraphWithCsvFile(filename)
 
 	reader := bufio.NewReader(os.Stdin)
 
@@ -36,8 +35,8 @@ func runCommandLine(filename string) {
 		origin := strings.Trim(places[0], " ")
 		destiny := strings.TrimSuffix(places[1], "\n")
 
-		cost, path := graph.Dijkstra(origin, destiny)
-		fmt.Println("Best route: " + graph.PrintPath(cost, path))
+		path := graph.Dijkstra(origin, destiny)
+		fmt.Println("Best route: " + graph.PrintPath(path))
 	} else {
 		fmt.Println(errors.New("The input must be in the format \"ORG-DEST\"."))
 	}
@@ -47,26 +46,11 @@ func runHttpServer() {
 	r := mux.NewRouter()
 	r.HandleFunc("api/routes", router.GetAll).Methods("GET")
 	r.HandleFunc("api/routes", router.GetAll).Methods("POST")
+	r.HandleFunc("api/bestroute", router.GetAll).Methods("GET")
 
 	port := ":3000"
 	fmt.Println("Server running in port: ", port)
 	log.Fatal(http.ListenAndServe(port, r))
-}
-
-func isValidCsvFile(filename string) bool {
-	return filename[len(filename)-4:] == ".csv"
-}
-
-func startGraphWithCsvFile(input string) Graph {
-	if len(input) > 0 {
-		csvFileName := os.Args[1]
-		if isValidCsvFile(csvFileName) {
-			return utils.PopulateGraph(csvFileName)
-		}
-	}
-	fmt.Println(errors.New("The input must be an existing csv file."))
-	os.Exit(1)
-	return Graph{}
 }
 
 func isValidRoute(route string) bool {

@@ -51,3 +51,19 @@ func TestCreate(t *testing.T) {
 			status, http.StatusOK)
 	}
 }
+
+func TestFindBestRoute(t *testing.T) {
+	values := []byte(`"origin": {"GRU"}, "destiny": {"CDG"}}`)
+	req, err := http.NewRequest("GET", "/api/bestroutes", bytes.NewBuffer(values))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(GetAll)
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("request returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+}

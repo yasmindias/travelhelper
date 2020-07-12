@@ -31,7 +31,7 @@ func (g *Graph) getEdges(vertex string) []Edge {
 	return g.vertices[vertex]
 }
 
-func (g *Graph) Dijkstra(origin, destiny string) (int, []string) {
+func (g *Graph) Dijkstra(origin, destiny string) Path {
 	h := newHeap()
 	h.push(Path{value: 0, vertices: []string{origin}})
 	visited := make(map[string]bool)
@@ -46,7 +46,7 @@ func (g *Graph) Dijkstra(origin, destiny string) (int, []string) {
 		}
 
 		if vertex == destiny {
-			return p.value, p.vertices
+			return p
 		}
 
 		for _, e := range g.getEdges(vertex) {
@@ -59,15 +59,15 @@ func (g *Graph) Dijkstra(origin, destiny string) (int, []string) {
 
 		visited[vertex] = true
 	}
-	return 0, nil
+	return Path{0, nil}
 }
 
-func (g *Graph) PrintPath(cost int, path []string) string {
+func (g *Graph) PrintPath(path Path) string {
 	str := ""
-	for _, vertex := range path {
+	for _, vertex := range path.vertices {
 		str += vertex + " - "
 	}
-	str = str[0:len(str)-3] + " > $" + strconv.Itoa(cost)
+	str = str[0:len(str)-3] + " > $" + strconv.Itoa(path.value)
 
 	return str
 }

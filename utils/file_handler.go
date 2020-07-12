@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -54,4 +55,20 @@ func WriteToFile(file *os.File, route Route) error {
 
 	err := writer.Write(line)
 	return err
+}
+
+func isValidCsvFile(filename string) bool {
+	return filename[len(filename)-4:] == ".csv"
+}
+
+func StartGraphWithCsvFile(input string) Graph {
+	if len(input) > 0 {
+		csvFileName := os.Args[1]
+		if isValidCsvFile(csvFileName) {
+			return PopulateGraph(csvFileName)
+		}
+	}
+	fmt.Println(errors.New("The input must be an existing csv file."))
+	os.Exit(1)
+	return Graph{}
 }

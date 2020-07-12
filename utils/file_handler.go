@@ -9,8 +9,6 @@ import (
 	. "github.com/yasmindias/travelhelper/models"
 )
 
-const Infinity = int(^uint(0) >> 1)
-
 func PopulateGraph(filename string) Graph {
 	file := OpenFile(filename)
 	routes := ReadFile(file)

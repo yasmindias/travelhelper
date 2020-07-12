@@ -20,7 +20,7 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 }
 
 func GetAll(w http.ResponseWriter, r *http.Request) {
-	file := utils.OpenFile("resources/input_routes.csv")
+	file := utils.OpenFile("../resources/input_routes.csv")
 	routes := utils.ReadFile(file)
 	respondWithJson(w, http.StatusOK, routes)
 }
@@ -33,7 +33,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file := utils.OpenFile("resources/input_routes.csv")
+	file := utils.OpenFile("../resources/input_routes.csv")
 	err := utils.WriteToFile(file, route)
 
 	if err == nil {

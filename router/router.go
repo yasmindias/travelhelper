@@ -3,13 +3,12 @@ package router
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	. "github.com/yasmindias/travelhelper/models"
 	"github.com/yasmindias/travelhelper/utils"
 )
-
-var filename = "../resources/input_routes.csv"
 
 func RespondWithError(w http.ResponseWriter, code int, msg string) {
 	respondWithJson(w, code, map[string]string{"error": msg})
@@ -23,7 +22,7 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 }
 
 func GetAll(w http.ResponseWriter, r *http.Request) {
-	file := utils.OpenFile(filename)
+	file := utils.OpenFileToRead()
 	routes := utils.ReadFile(file)
 	respondWithJson(w, http.StatusOK, routes)
 }
@@ -36,7 +35,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file := utils.OpenFile(filename)
+	file := utils.OpenFileToWrite()
 	err := utils.WriteToFile(file, route)
 
 	if err == nil {
@@ -46,7 +45,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 
 func FindBestRoute(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	graph := utils.StartGraphWithCsvFile(filename)
+	graph := utils.StartGraphWithCsvFile(os.Getenv("filename"))
 	path := graph.Dijkstra(params["origin"], params["destiny"])
 
 	err := json.NewEncoder(w).Encode(&path)

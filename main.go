@@ -4,11 +4,11 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 	router "github.com/yasmindias/travelhelper/router"
@@ -17,9 +17,12 @@ import (
 
 func main() {
 	if len(os.Args) > 1 {
-		runCommandLine(os.Args[1])
-	} else {
+		os.Setenv("filename", os.Args[1])
+
 		runHttpServer()
+		runCommandLine(os.Getenv("filename"))
+	} else {
+		fmt.Println("Please run start command with the csv filename")
 	}
 }
 
@@ -44,17 +47,23 @@ func runCommandLine(filename string) {
 
 func runHttpServer() {
 	r := mux.NewRouter()
-	r.HandleFunc("api/routes", router.GetAll).Methods("GET")
-	r.HandleFunc("api/routes", router.GetAll).Methods("POST")
-	r.HandleFunc("api/bestroute", router.GetAll).Methods("GET")
+	r.HandleFunc("/api/routes", router.GetAll).Methods("GET")
+	r.HandleFunc("/api/routes", router.Create).Methods("POST")
+	r.HandleFunc("/api/bestroute", router.FindBestRoute).Methods("GET")
 
 	port := ":3000"
-	fmt.Println("Server running in port: ", port)
-	log.Fatal(http.ListenAndServe(port, r))
+	go func() {
+		http.ListenAndServe(port, r)
+	}()
 }
 
 func isValidRoute(route string) bool {
 	var validRoute = regexp.MustCompile(`[a-zA-Z]{3}-[a-zA-Z]{3}`)
 
 	return len(route) > 0 && validRoute.MatchString(route)
+}
+
+func worker(finished chan bool) {
+	time.Sleep(time.Second)
+	finished <- true
 }

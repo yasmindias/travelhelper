@@ -10,8 +10,8 @@ import (
 	. "github.com/yasmindias/travelhelper/models"
 )
 
-func PopulateGraph(filename string) Graph {
-	file := OpenFile(filename)
+func PopulateGraph() Graph {
+	file := OpenFileToRead()
 	routes := ReadFile(file)
 	graph := Graph{}
 
@@ -20,8 +20,18 @@ func PopulateGraph(filename string) Graph {
 	return graph.AddEdges(routes)
 }
 
-func OpenFile(filename string) *os.File {
-	file, err := os.Open(filename)
+func OpenFileToRead() *os.File {
+	file, err := os.Open(os.Getenv("filename"))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	return file
+}
+
+func OpenFileToWrite() *os.File {
+	file, err := os.OpenFile(os.Getenv("filename"), os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -48,12 +58,14 @@ func ReadFile(file *os.File) []Route {
 
 func WriteToFile(file *os.File, route Route) error {
 	writer := csv.NewWriter(file)
-	defer writer.Flush()
 
 	cost := strconv.Itoa(route.Cost)
 	line := []string{route.Origin, route.Destiny, cost}
 
 	err := writer.Write(line)
+	writer.Flush()
+	file.Close()
+
 	return err
 }
 
@@ -65,7 +77,7 @@ func StartGraphWithCsvFile(input string) Graph {
 	if len(input) > 0 {
 		csvFileName := os.Args[1]
 		if isValidCsvFile(csvFileName) {
-			return PopulateGraph(csvFileName)
+			return PopulateGraph()
 		}
 	}
 	fmt.Println(errors.New("The input must be an existing csv file."))

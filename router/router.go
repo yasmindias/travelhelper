@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gorilla/mux"
 	. "github.com/yasmindias/travelhelper/models"
 	"github.com/yasmindias/travelhelper/utils"
 )
@@ -44,13 +43,13 @@ func Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func FindBestRoute(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
+	params := r.URL.Query()
 	graph := utils.StartGraphWithCsvFile(os.Getenv("filename"))
-	path := graph.Dijkstra(params["origin"], params["destiny"])
+	path := graph.Dijkstra(params.Get("origin"), params.Get("destiny"))
 
-	err := json.NewEncoder(w).Encode(&path)
-	if err != nil {
+	if path.Path == nil {
 		RespondWithError(w, http.StatusNotFound, "Couldn't find best route")
 		return
 	}
+	respondWithJson(w, http.StatusOK, path)
 }

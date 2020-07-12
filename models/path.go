@@ -3,14 +3,14 @@ package models
 import "strconv"
 
 type Path struct {
-	value    int
-	vertices []string
+	Cost int
+	Path []string
 }
 
 type minPath []Path
 
 func (h minPath) Len() int           { return len(h) }
-func (h minPath) Less(i, j int) bool { return h[i].value < h[j].value }
+func (h minPath) Less(i, j int) bool { return h[i].Cost < h[j].Cost }
 func (h minPath) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
 
 func (h *minPath) Push(x interface{}) {
@@ -26,13 +26,13 @@ func (h *minPath) Pop() interface{} {
 }
 
 func (p *Path) ToString() string {
-	path := ""
-	for i, vertex := range p.vertices {
-		path += vertex + " "
-		if i != len(p.vertices) {
-			path += "- "
+	Path := ""
+	for i, vertex := range p.Path {
+		Path += vertex + " "
+		if i != len(p.Path) {
+			Path += "- "
 		}
 	}
-	path += " > $" + strconv.Itoa(p.value)
-	return path
+	Path += " > $" + strconv.Itoa(p.Cost)
+	return Path
 }

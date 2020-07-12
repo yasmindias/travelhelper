@@ -33,13 +33,13 @@ func (g *Graph) getEdges(vertex string) []Edge {
 
 func (g *Graph) Dijkstra(origin, destiny string) Path {
 	h := newHeap()
-	h.push(Path{value: 0, vertices: []string{origin}})
+	h.push(Path{Cost: 0, Path: []string{origin}})
 	visited := make(map[string]bool)
 
 	for len(*h.values) > 0 {
 		//Gets the nearest vertex
 		p := h.pop()
-		vertex := p.vertices[len(p.vertices)-1]
+		vertex := p.Path[len(p.Path)-1]
 
 		if visited[vertex] {
 			continue
@@ -51,9 +51,9 @@ func (g *Graph) Dijkstra(origin, destiny string) Path {
 
 		for _, e := range g.getEdges(vertex) {
 			if !visited[vertex] {
-				altCost := p.value + e.cost
-				vertices := append([]string{}, append(p.vertices, e.vertex)...)
-				h.push(Path{value: altCost, vertices: vertices})
+				altCost := p.Cost + e.cost
+				vertices := append([]string{}, append(p.Path, e.vertex)...)
+				h.push(Path{Cost: altCost, Path: vertices})
 			}
 		}
 
@@ -64,10 +64,10 @@ func (g *Graph) Dijkstra(origin, destiny string) Path {
 
 func (g *Graph) PrintPath(path Path) string {
 	str := ""
-	for _, vertex := range path.vertices {
+	for _, vertex := range path.Path {
 		str += vertex + " - "
 	}
-	str = str[0:len(str)-3] + " > $" + strconv.Itoa(path.value)
+	str = str[0:len(str)-3] + " > $" + strconv.Itoa(path.Cost)
 
 	return str
 }

@@ -3,15 +3,16 @@ package utils
 import (
 	"encoding/csv"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 
-	"github.com/yasmindias/travelhelper/models"
+	. "github.com/yasmindias/travelhelper/models"
 )
 
 const Infinity = int(^uint(0) >> 1)
 
-func PopulateGraph(filename string) models.Graph {
+func PopulateGraph(filename string) Graph {
 	file := openFile(filename)
 	graph := readFile(file)
 
@@ -30,8 +31,8 @@ func openFile(filename string) *os.File {
 	return file
 }
 
-func readFile(file *os.File) models.Graph {
-	graph := models.Graph{}
+func readFile(file *os.File) Graph {
+	graph := Graph{}
 	graph.Init()
 
 	csvLines, err := csv.NewReader(file).ReadAll()
@@ -45,4 +46,18 @@ func readFile(file *os.File) models.Graph {
 	}
 
 	return graph
+}
+
+func writeToFile(filename string, route Route) {
+	file := openFile(filename)
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	cost := strconv.Itoa(route.Cost)
+	line := []string{route.Origin, route.Destiny, cost}
+
+	err := writer.Write(line)
+	if err != nil {
+		log.Fatal("Can't add new route to file", err)
+	}
 }

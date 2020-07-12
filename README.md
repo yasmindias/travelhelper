@@ -19,12 +19,6 @@ $ travelhelper resources/input_routes.csv
   Best route: GRU - BRC - SCL - ORL - CDG > $40
 ```
 
-## Run on Docker
-> ### Requirements
-> - [Installed Docker environment](https://docs.docker.com/get-started/)
-
-1.
-
 ## Run Tests
 
 Before running the tests the file `resources/input_routes.csv` is loaded to memory. The tests have pre-defined result expectations based on the original version of this file, so if changes were some tests may fail.

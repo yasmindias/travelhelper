@@ -1,0 +1,86 @@
+{
+	"info": {
+		"_postman_id": "aa1acc01-8af9-4fda-8c39-13786a2d1e82",
+		"name": "TravelHelper",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Routes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/routes",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"routes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create New Route",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Origin\": \"SCL\",\n    \"Destiny\": \"BRC\",\n    \"Cost\": 19\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/routes",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"routes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Best Route",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/bestroute?origin=GRU&destiny=CDG",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"bestroute"
+					],
+					"query": [
+						{
+							"key": "origin",
+							"value": "GRU"
+						},
+						{
+							"key": "destiny",
+							"value": "CDG"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -27,7 +27,7 @@ func AddEdges(graph *Graph) {
 	graph.AddEdges(routes)
 }
 
-func TestInt(t *testing.T) {
+func TestInit(t *testing.T) {
 	graph := setup()
 	if graph.vertices == nil {
 		t.Error("Couldn't create vertices map")

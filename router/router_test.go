@@ -2,6 +2,7 @@ package router
 
 import (
 	"bytes"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -12,14 +13,24 @@ func TestMain(m *testing.M) {
 	os.Setenv("filename", "resources/input_routes.csv")
 }
 
-func TestGetAll(t *testing.T) {
-	req, err := http.NewRequest("GET", "/api/routes", nil)
+func makeRequest(method, url string, body io.Reader) (error, *httptest.ResponseRecorder) {
+	req, err := http.NewRequest(method, url, body)
+
 	if err != nil {
-		t.Fatal(err)
+		return err, nil
 	}
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(GetAll)
 	handler.ServeHTTP(rr, req)
+
+	return nil, rr
+}
+
+func TestGetAll(t *testing.T) {
+	err, rr := makeRequest("GET", "/api/routes", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("request returned wrong status code: got %v want %v",
@@ -42,14 +53,10 @@ func TestGetAll(t *testing.T) {
 
 func TestCreate(t *testing.T) {
 	body := []byte(`{"Origin":"SCL","Destiny":"BRC","Cost":"15"}`)
-	req, err := http.NewRequest("POST", "/api/routes", bytes.NewBuffer(body))
+	err, rr := makeRequest("POST", "/api/routes", bytes.NewBuffer(body))
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(GetAll)
-	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("request returned wrong status code: got %v want %v",
@@ -59,13 +66,10 @@ func TestCreate(t *testing.T) {
 
 func TestFindBestRoute(t *testing.T) {
 	values := []byte(`"origin": {"GRU"}, "destiny": {"CDG"}}`)
-	req, err := http.NewRequest("GET", "/api/bestroutes", bytes.NewBuffer(values))
+	err, rr := makeRequest("GET", "/api/bestroutes", bytes.NewBuffer(values))
 	if err != nil {
 		t.Fatal(err)
 	}
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(GetAll)
-	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("request returned wrong status code: got %v want %v",

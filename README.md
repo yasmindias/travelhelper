@@ -6,7 +6,7 @@ Given a set of routes with their respective costs this project calculates the ro
 - [Installed Golang environment](https://golang.org/doc/install)
 
 1. Run `go install github.com/yasmindias/travelhelper` to create the executable file in $GOPATH
-2. Run `travelhelper [$FILENAME]` where `$FILENAME` is the complete path to you `.csv` file.
+2. Run `travelhelper [$FILENAME]` where `$FILENAME` is the complete path to the `.csv` file.
     > In the project there is a csv file in the path `resources/input_routes.csv` that is used for running tests. It can also be used for running the project but bear in mind that the tests may fail after alterations.
 
 
@@ -25,8 +25,8 @@ $ travelhelper resources/input_routes.csv
 ```
 
 
-### Use on REST Api
-The API can be accessed on `localhost:3000`.
+### Use on REST API
+The API can be accessed on `localhost:3000`. The export for the postman collection can be found [here](https://github.com/yasmindias/travelhelper/tree/master/postman-collection)
 
 **Add New Route**
 
